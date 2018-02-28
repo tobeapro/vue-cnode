@@ -12,7 +12,7 @@
                     span.good(v-if="item.good") 精华
                     span(v-if="item.good") ·
                     span.tab {{tabType(item.tab)}}
-                .title {{item.title}}
+                a.title(:href="'#/detail/'+item.id") {{item.title}}
                 .visit 回复数:{{item.reply_count}} / 点击数:{{item.visit_count}}
 </template>
 <script>
@@ -26,10 +26,8 @@
         methods:{
             tabType(val){
                 switch(val){
-                    case "share":return "分享"
-                    break;
-                    case "ask":return "问答"
-                    break;
+                    case "share":return "分享";
+                    case "ask":return "问答";
                     default:return ""
                 }
             }
@@ -88,6 +86,10 @@
                     font-size:16px;
                     font-weight:bold;
                     line-height:30px;
+                    color:#000;
+                    &:hover{
+                        text-decoration:underline;
+                    }
                 }
                 .visit{
                     line-height:20px;
