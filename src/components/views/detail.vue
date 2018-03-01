@@ -10,6 +10,8 @@
     .content(v-html="detail.content")
     .reply 
         h4 共有评论{{detail.reply_count}}条
+        p.text
+            input(v-model="text")
         ul.reply-list
             li(v-for="(item,index) in detail.replies",:key="index") 
                 .author
@@ -17,8 +19,10 @@
                     span.name {{item.author.loginname}}
                     span.time {{index+1}}楼·{{countTime(item.create_at)}}前
                 .reply-content(v-html="item.content")
+                .reply-btn(@click.prevent="reply(item.id)") 评论
 </template>
 <script>
+    import qs from 'qs'
     export default {
         name:'detail',
         data(){
@@ -27,7 +31,13 @@
                     author:{
                         loginname:''
                     }
-                }
+                },
+                text:''
+            }
+        },
+        computed:{
+            token(){
+                return this.$store.state.token
             }
         },
         created(){
@@ -59,6 +69,19 @@
                 }else{
                     return now.getSeconds()-time.getSeconds()+"秒"
                 }
+            },
+            reply(id){
+                this.$axios.post(`https://cnodejs.org/api/v1/topic/${this.$route.params.id}/replies`,qs.stringify({
+                    accesstoken:this.token,
+                    content:this.text,
+                    reply_id:id
+                }))
+                .then((res)=>{
+                    alert(res)
+                })
+                .catch((err)=>{
+                    alert(err)
+                })
             }
         }
     }
@@ -130,10 +153,14 @@
             line-height:40px;
             background-color:#ddd;
         }
+        .text{
+            border:1px solid #000;
+        }
         .reply-list{
             margin-top:10px;
             border-top:1px solid #ddd;
             li{
+                position: relative;
                 padding-left:10px;
                 border-bottom:1px solid #ddd;
                 .author{
@@ -151,6 +178,12 @@
                         margin-left:10px;
                         color:#08c;
                     }
+                }
+                .reply-btn{
+                    position: absolute;
+                    top:10px;
+                    right:10px;
+                    cursor: pointer;
                 }
             }
         }
