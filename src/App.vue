@@ -1,18 +1,18 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <div class="container">
+      <!-- <keep-alive> -->
+        <router-view></router-view>
+      <!-- </keep-alive> -->
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
   }
 }
 </script>
@@ -50,5 +50,13 @@ a,a:visited,a:active,a:link{text-decoration:none;}
 }
 .clearfix{
 	zoom:1;
+}
+#app{
+  background-color:#eee;
+}
+.container{
+  margin:0 auto;
+  max-width:980px;
+  background-color:#fff;
 }
 </style>

@@ -1,8 +1,21 @@
 <template lang="pug">
   .content
+    ul.nav.clearfix
+        li
+            a(href="#",@click.prevent="changeTab('all')",:class="tab==='all'?'active':''") 全部
+        li
+            a(href="#",@click.prevent="changeTab('good')",:class="tab==='good'?'active':''") 精华
+        li
+            a(href="#",@click.prevent="changeTab('share')",:class="tab==='share'?'active':''") 分享   
+        li
+            a(href="#",@click.prevent="changeTab('ask')",:class="tab==='ask'?'active':''") 问答 
+        li
+            a(href="#",@click.prevent="changeTab('job')",:class="tab==='job'?'active':''") 招聘
+        li
+            a(href="#",@click.prevent="changeTab('dev')",:class="tab==='dev'?'active':''") 客户端测试
     ul.list
         li(class="clearfix",v-for="(item,index) in list",:key="index")
-            .user_icon
+            .user_icon(@click="userInfo(item.author.loginname)")
                 img(:src="item.author.avatar_url")
                 .name {{item.author.loginname}}
             .info
@@ -20,6 +33,8 @@
         name:'list',
         data(){
             return{
+                tab:'all',
+                page:1,
                 list:[]
             }
         },
@@ -28,29 +43,73 @@
                 switch(val){
                     case "share":return "分享";
                     case "ask":return "问答";
+                    case "job":return "招聘";
+                    case "dev":return "客户端测试"
                     default:return ""
                 }
+            },
+            userInfo(name){
+                this.$router.push("/user/"+name)
+            },
+            changeTab(type){
+                this.tab=type
+                this.page=1
+                this.$axios.get(`https://cnodejs.org/api/v1/topics/?tab=${this.tab}&page=${this.page}`)
+                .then((res)=>{
+                    this.list=res.data.data
+                })
+                .catch((err)=>{
+                    alert(err)
+                })
             }
         },
         created(){
             this.$axios.get('https://cnodejs.org/api/v1/topics/?tab=all&page=1')
             .then((res)=>{
                 this.list=res.data.data
-                console.log(res.data.data)
+            })
+            .catch((err)=>{
+                alert(err)
             })
         }
     }
 </script>
 <style lang="scss" scoped>
-    .list{
+    .nav{
+        background-color:#555;
         li{
+            float:left;
+            margin:6px;
+            a{
+               padding:4px 12px;
+               line-height:30px;
+               color:#fff;
+               border-radius: 8px;
+               &:hover{
+                   text-decoration: underline;
+               }
+               &.active{
+                   color:#000;
+                   background:#fff;
+               }
+            }
+        }
+    }
+    .list{
+        width:100%;
+        li{
+            position: relative;
+            padding:10px 0;
+            width:100%;
             background-color:#fff;
             &:hover{
                 background-color:#f6f6f6;
             }
             .user_icon{
-                float:left;
+                position: absolute;
                 width:72px;
+                top:50%;
+                transform: translateY(-50%);
                 img{
                     display:block;
                     margin:6px;
@@ -62,13 +121,16 @@
                 .name{
                     line-height:20px;
                     text-align: center;
+                    white-space: nowrap;
                     overflow:hidden;
                     text-overflow: ellipsis;
                 }
             }
             .info{
-                float:left;
-                padding:6px;
+                margin-left:76px;
+                white-space: nowrap;
+                overflow:hidden;
+                text-overflow: ellipsis;
                 .marked{
                     font-weight:bold;
                     line-height:20px;
@@ -82,7 +144,7 @@
                         color:#0673f0;
                     }
                 }
-                .title{                  
+                .title{            
                     font-size:16px;
                     font-weight:bold;
                     line-height:30px;
