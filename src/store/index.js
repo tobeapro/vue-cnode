@@ -3,13 +3,24 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 export default new Vuex.Store({
     state:{
-        token: '9b0293c3-f097-4150-ab62-e16442170047'
+        token: '',
+        userInfo:{}
     },
     mutations:{
-
+        setToken(state,str){
+            state.token=str
+        },
+        setUserInfo(state,obj){
+            state.userInfo=obj
+        }
     },
     actions:{
-
+        set_token({commit},str){
+            commit('setToken',str)
+        },
+        set_userInfo({commit},obj){
+            commit('setUserInfo',obj)
+        }
     },
     getters:{
 

@@ -1,10 +1,8 @@
 <template>
   <div id="app">
-    <div class="container">
       <!-- <keep-alive> -->
         <router-view></router-view>
       <!-- </keep-alive> -->
-    </div>
   </div>
 </template>
 
@@ -26,7 +24,7 @@ del,dfn,em,font,img,ins,kbd,q,s,samp,
 small,strike,strong,sub,sup,tt,var,
 dd,dl,dt,li,ol,ul,
 fieldset,form,label,legend,select,
-table,caption,tbody,tfoot,thead,tr,th,td,input,button,i,span{
+table,caption,tbody,tfoot,thead,tr,th,td,input,textarea,button,i,span{
 	margin:0;
 	padding:0;
 	border:0;
@@ -58,5 +56,43 @@ a,a:visited,a:active,a:link{text-decoration:none;}
   margin:0 auto;
   max-width:980px;
   background-color:#fff;
+}
+button{
+  transition: all .2s;
+  padding:6px 12px;
+  color:#fff;
+  background-color:#07a0f8;
+  border-radius: 6px;
+  cursor:pointer;
+}
+button:hover{
+  background-color:#0475f7;
+}
+.loading:before{
+  content:'';
+  position:fixed;
+  z-index:100;
+  top:42px;
+  bottom:0;
+  width:100%;
+  background-color:#fff;
+}
+.loading:after{
+  content:'';
+  position:fixed;
+  z-index:101;
+  top:30%;
+  left:50%;
+  margin-left:-20px;
+  animation: loading 1s linear infinite;
+  width:40px;
+  height:40px;
+  border:1px solid #0673f0;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+@keyframes loading {
+  from {transform: rotate(0deg)}
+  to {transform: rotate(360deg)}
 }
 </style>

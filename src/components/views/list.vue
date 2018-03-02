@@ -1,82 +1,130 @@
 <template lang="pug">
   .content
+    login(:showStatus="showStatus",@changeShowStatus="checkUserInfo")
     ul.nav.clearfix
-        li
-            a(href="#",@click.prevent="changeTab('all')",:class="tab==='all'?'active':''") 全部
-        li
-            a(href="#",@click.prevent="changeTab('good')",:class="tab==='good'?'active':''") 精华
-        li
-            a(href="#",@click.prevent="changeTab('share')",:class="tab==='share'?'active':''") 分享   
-        li
-            a(href="#",@click.prevent="changeTab('ask')",:class="tab==='ask'?'active':''") 问答 
-        li
-            a(href="#",@click.prevent="changeTab('job')",:class="tab==='job'?'active':''") 招聘
-        li
-            a(href="#",@click.prevent="changeTab('dev')",:class="tab==='dev'?'active':''") 客户端测试
-    ul.list
-        li(class="clearfix",v-for="(item,index) in list",:key="index")
-            .user_icon(@click="userInfo(item.author.loginname)")
-                img(:src="item.author.avatar_url")
-                .name {{item.author.loginname}}
-            .info
-                .marked
-                    span.top(v-if="item.top") 置顶
-                    span(v-if="item.top") ·
-                    span.good(v-if="item.good") 精华
-                    span(v-if="item.good") ·
-                    span.tab {{tabType(item.tab)}}
-                a.title(:href="'#/detail/'+item.id") {{item.title}}
-                .visit 回复数:{{item.reply_count}} / 点击数:{{item.visit_count}}
+        .container
+            li
+                a(href="#",@click.prevent="changeTab('all')",:class="tab==='all'?'active':''") 全部
+            li
+                a(href="#",@click.prevent="changeTab('good')",:class="tab==='good'?'active':''") 精华
+            li
+                a(href="#",@click.prevent="changeTab('share')",:class="tab==='share'?'active':''") 分享   
+            li
+                a(href="#",@click.prevent="changeTab('ask')",:class="tab==='ask'?'active':''") 问答 
+            li
+                a(href="#",@click.prevent="changeTab('job')",:class="tab==='job'?'active':''") 招聘
+            li
+                a(href="#",@click.prevent="changeTab('dev')",:class="tab==='dev'?'active':''") 客户端测试
+        .user(@click.prevent="checkUserInfo",:title="userInfo.loginname?userInfo.loginname:'请登录'")
+            img(:src="userInfo==={}||userInfo.avatar_url===undefined?noUser:userInfo.avatar_url")
+    ul.list(:class="loadingStatus?'loading':''")
+        .container
+            li(class="clearfix",v-for="(item,index) in list",:key="index")
+                .user_icon(@click="toUserInfo(item.author.loginname)")
+                    img(:src="item.author.avatar_url")
+                    .name {{item.author.loginname}}
+                .info
+                    .marked
+                        span.top(v-if="item.top") 置顶
+                        span(v-if="item.top") ·
+                        span.good(v-if="item.good") 精华
+                        span(v-if="item.good") ·
+                        span.tab {{tabType(item.tab)}}
+                    a.title(:href="'#/detail/'+item.id") {{item.title}}
+                    .visit 回复数:{{item.reply_count}} / 点击数:{{item.visit_count}}
 </template>
 <script>
-    export default {
-        name:'list',
-        data(){
-            return{
-                tab:'all',
-                page:1,
-                list:[]
+import noUser from '../../assets/noUser.png'
+import login from '../common/login.vue'
+export default {
+    name:'list',
+    data(){
+        return{
+            tab:'all',
+            page:1,
+            list:[],
+            noUser,
+            showStatus:false,
+            loadingStatus:false
+        }
+    },
+    components:{
+        login
+    },
+    computed:{
+        userInfo(){
+            return this.$store.state.userInfo
+        }
+    },
+    methods:{
+        tabType(val){
+            switch(val){
+                case "share":return "分享";
+                case "ask":return "问答";
+                case "job":return "招聘";
+                case "dev":return "客户端测试"
+                default:return ""
             }
         },
-        methods:{
-            tabType(val){
-                switch(val){
-                    case "share":return "分享";
-                    case "ask":return "问答";
-                    case "job":return "招聘";
-                    case "dev":return "客户端测试"
-                    default:return ""
-                }
-            },
-            userInfo(name){
-                this.$router.push("/user/"+name)
-            },
-            changeTab(type){
-                this.tab=type
-                this.page=1
+        toUserInfo(name){
+            this.$router.push("/user/"+name)
+        },
+        changeTab(type){
+            this.tab=type
+            this.page=1
+            this.loadingStatus=true;
+            this.$axios.get(`https://cnodejs.org/api/v1/topics/?tab=${this.tab}&page=${this.page}`)
+            .then((res)=>{
+                this.loadingStatus=false;
+                this.list=res.data.data
+                window.scroll(0,0)
+            })
+            .catch((err)=>{
+                this.loadingStatus=false;
+                alert(err)
+            })
+        },
+        loadMoreData(){
+            console.log(document.body.scrollTop,document.body.clientHeight)
+            if(document.body.scrollTop+10>document.body.clientHeight){
+                this.page++
                 this.$axios.get(`https://cnodejs.org/api/v1/topics/?tab=${this.tab}&page=${this.page}`)
                 .then((res)=>{
-                    this.list=res.data.data
+                    res.data.data.forEach((val)=>{
+                        this.list.push(val)
+                    })
                 })
                 .catch((err)=>{
                     alert(err)
                 })
             }
         },
-        created(){
-            this.$axios.get('https://cnodejs.org/api/v1/topics/?tab=all&page=1')
-            .then((res)=>{
-                this.list=res.data.data
-            })
-            .catch((err)=>{
-                alert(err)
-            })
+        checkUserInfo(){
+            this.showStatus=!this.showStatus
         }
+    },
+    created(){
+        this.$axios.get('https://cnodejs.org/api/v1/topics/?tab=all&page=1')
+        .then((res)=>{
+            this.list=res.data.data
+        })
+        .catch((err)=>{
+            alert(err)
+        })
+    },
+    mounted(){
+        window.addEventListener('scroll', this.loadMoreData)        
     }
+}
 </script>
 <style lang="scss" scoped>
     .nav{
-        background-color:#555;
+        position:fixed;
+        z-index:1;
+        top:0;
+        left:0;
+        width:100%;
+        background-color:rgba(0,0,0,.6);
         li{
             float:left;
             margin:6px;
@@ -94,8 +142,22 @@
                }
             }
         }
+        .user{
+            position: absolute;
+            right:4px;
+            top:4px;
+            cursor: pointer;
+            img{
+                display:block;
+                width:34px;
+                height:34px;
+                border-radius:50%;
+                background-color:#fff;
+            }
+        }
     }
     .list{
+        margin-top:42px;
         width:100%;
         li{
             position: relative;

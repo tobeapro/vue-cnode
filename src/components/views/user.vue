@@ -1,26 +1,27 @@
 <template lang="pug">
   .user
-    h4 个人信息
-    .info
-      .avatar
-        img(:src="data.avatar_url")
-      p.name {{data.loginname}}
-      p.score 积分:{{data.score}}
-      p.github 
-        a(:href="'https://github.com/'+data.githubUsername",target="_blank") @仓库地址
-      p.createTime 注册时间{{createTime(data.create_at)}}前
-    h4 创建的话题
-    .createTopic
-      ul.list
-        li(v-for="(item,index) in data.recent_topics",:key="index")
-          img(:src="item.author.avatar_url")
-          a.title(:href="'#/detail/'+item.id") {{item.title}}
-    h4 最近参与的话题
-    .joinTopic
-      ul.list
-        li(v-for="(item,index) in data.recent_replies",:key="index")
-          img(:src="item.author.avatar_url",@click.prevent="userInfo(item.author.loginname)")
-          a.title(:href="'#/detail/'+item.id") {{item.title}}
+    .container
+      h4 个人信息
+      .info
+        .avatar
+          img(:src="data.avatar_url")
+        p.name {{data.loginname}}
+        p.score 积分:{{data.score}}
+        p.github 
+          a(:href="'https://github.com/'+data.githubUsername",target="_blank") @仓库地址
+        p.createTime 注册时间{{createTime(data.create_at)}}前
+      h4 创建的话题
+      .createTopic
+        ul.list
+          li(v-for="(item,index) in data.recent_topics",:key="index")
+            img(:src="item.author.avatar_url")
+            a.title(:href="'#/detail/'+item.id") {{item.title}}
+      h4 最近参与的话题
+      .joinTopic
+        ul.list
+          li(v-for="(item,index) in data.recent_replies",:key="index")
+            img(:src="item.author.avatar_url",@click.prevent="userInfo(item.author.loginname)")
+            a.title(:href="'#/detail/'+item.id") {{item.title}}
 </template>
 <script>
 export default {
