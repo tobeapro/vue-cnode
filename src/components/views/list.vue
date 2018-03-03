@@ -85,16 +85,21 @@ export default {
             })
         },
         loadMoreData(){
-            console.log(document.body.scrollTop,document.body.clientHeight)
-            if(document.body.scrollTop+10>document.body.clientHeight){
+            let top=document.body.scrollTop||document.documentElement.scrollTop
+            let wHeight=window.innerHeight
+            let bHeight=document.body.clientHeight||document.documentElement.clientHeight
+            if(top+wHeight>=bHeight){
+                this.loadingStatus=true;
                 this.page++
                 this.$axios.get(`https://cnodejs.org/api/v1/topics/?tab=${this.tab}&page=${this.page}`)
                 .then((res)=>{
+                    this.loadingStatus=false;
                     res.data.data.forEach((val)=>{
                         this.list.push(val)
                     })
                 })
                 .catch((err)=>{
+                    this.loadingStatus=false;
                     alert(err)
                 })
             }
@@ -114,6 +119,9 @@ export default {
     },
     mounted(){
         window.addEventListener('scroll', this.loadMoreData)        
+    },
+    beforeDestory(){
+        window.removeEventListener('scroll',this.loadMoreData)
     }
 }
 </script>
@@ -124,7 +132,7 @@ export default {
         top:0;
         left:0;
         width:100%;
-        background-color:rgba(0,0,0,.6);
+        background-color:#555;
         li{
             float:left;
             margin:6px;
@@ -157,7 +165,7 @@ export default {
         }
     }
     .list{
-        margin-top:42px;
+        padding-top:42px;
         width:100%;
         li{
             position: relative;

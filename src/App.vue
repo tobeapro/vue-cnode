@@ -30,12 +30,11 @@ table,caption,tbody,tfoot,thead,tr,th,td,input,textarea,button,i,span{
 	border:0;
 	box-sizing: border-box;
 }
-html,body {
+body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   font-size:12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height:100%;
 }
 input,button,textarea,td,th,select{outline:none;}
 table {border-collapse:collapse;border-spacing:0;}

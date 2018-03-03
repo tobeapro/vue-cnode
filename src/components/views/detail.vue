@@ -29,8 +29,11 @@
                         span.time {{index+1}}楼·{{countTime(item.create_at)}}前
                     .reply-content(v-html="item.content")
                     .reply-btn(@click.prevent="reply(item.id)") 回复
-        .bottom-reply
-
+    .footer
+        .input
+            input(v-model="replyText")
+        .confirm
+            button() 确认
 </template>
 <script>
 import qs from 'qs'
@@ -194,7 +197,7 @@ export default {
     color: #08c
 }
 .detail{
-    margin-top:40px;
+    margin:40px 0;
     .back{
         position:fixed;
         z-index:1;
@@ -203,7 +206,7 @@ export default {
         width:100%;
         height:40px;
         text-align:center;
-        background-color:rgba(0,0,0,.6);
+        background-color:#555;
         .toHome{
             float:left;
             width:40px;
@@ -316,6 +319,27 @@ export default {
                 }
             }
         }
+    }
+    .footer{
+        position:fixed;
+        bottom:0;
+        width:100%;
+        height:40px;
+        background-color:#555;
+        .input{
+            margin:8px 60px 8px 10px;
+            input{
+                padding:0 6px;
+                width:100%;
+                line-height:24px;
+                border-radius: 6px;
+            }
+        }
+        .confirm{
+            position: absolute;
+            top:6px;
+            right:4px;
+        }      
     }
 }
 </style>

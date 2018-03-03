@@ -1,5 +1,8 @@
 <template lang="pug">
   .user
+    .back
+        .toHome(@click.prevent="toHome")
+            img(:src="back")
     .container
       h4 个人信息
       .info
@@ -24,11 +27,13 @@
             a.title(:href="'#/detail/'+item.id") {{item.title}}
 </template>
 <script>
+import back from '../../assets/back.png'
 export default {
   name:'user',
   data(){
     return{
-      data:{}
+      data:{},
+      back
     }
   },
   created(){
@@ -70,7 +75,10 @@ export default {
       .catch((err)=>{
         alert(err)
       })
-    }
+    },
+    toHome(){
+      this.$router.push("/")
+    } 
   },
   watch:{
     '$route': 'getUserInfo'
@@ -78,7 +86,29 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .user{  
+  .user{
+    padding-top:40px;
+    .back{
+        position:fixed;
+        z-index:1;
+        top:0;
+        left:0;
+        width:100%;
+        height:40px;
+        text-align:center;
+        background-color:#555;
+        .toHome{
+            float:left;
+            width:40px;
+            line-height:40px;
+            cursor:pointer;
+            img{
+                width:20px;
+                height:20px;
+                vertical-align:middle;
+            }
+        }
+    }
     h4{
       padding:0 10px;
       line-height:40px;
