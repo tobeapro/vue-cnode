@@ -120,7 +120,7 @@ export default {
     mounted(){
         window.addEventListener('scroll', this.loadMoreData)        
     },
-    beforeDestory(){
+    beforeDestroy(){
         window.removeEventListener('scroll',this.loadMoreData)
     }
 }

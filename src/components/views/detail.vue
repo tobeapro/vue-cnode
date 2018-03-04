@@ -17,10 +17,6 @@
         .content(v-html="detail.content")
         .reply 
             h4 共有评论{{detail.reply_count}}条
-            .reply-text
-                textarea(v-model="commentText",placeholder="请输入评论内容...")
-                button(@click.prevent="comment") 评论
-                button(class="clear",@click.prevent="clearComment") 清空
             ul.reply-list
                 li(v-for="(item,index) in detail.replies",:key="index") 
                     .author
@@ -28,12 +24,12 @@
                         span.name {{item.author.loginname}}
                         span.time {{index+1}}楼·{{countTime(item.create_at)}}前
                     .reply-content(v-html="item.content")
-                    .reply-btn(@click.prevent="reply(item.id)") 回复
+                    .reply-btn(@click.prevent="reply(item)") 回复
     .footer
         .input
             input(v-model="replyText")
         .confirm
-            button() 确认
+            button(@click.prevent="confirmReply") 确认
 </template>
 <script>
 import qs from 'qs'
@@ -52,6 +48,7 @@ export default {
             showStatus:false,
             loadingStatus:true,
             replyText:'',
+            replyId:'',
             commentText:'',
             noUser,
             back,
@@ -101,54 +98,43 @@ export default {
                 return now.getSeconds()-time.getSeconds()+"秒"
             }
         },
-        reply(id){
-            this.$axios.post(`https://cnodejs.org/api/v1/topic/${this.$route.params.id}/replies`,qs.stringify({
-                accesstoken:this.token,
-                content:this.replyText,
-                reply_id:id
-            }))
-            .then((res)=>{
-                alert(res)
-            })
-            .catch((err)=>{
-                alert(err)
-            })
+        reply(item){
+            this.replyId=item.id,
+            this.replyText=`@${item.author.loginname} `
         },
-        comment(){
+        confirmReply(){
             if(this.token===''){
                 alert('请先登录')
                 return
             }else{
-               this.$axios.post(`https://cnodejs.org/api/v1/topic/${this.$route.params.id}/replies`,qs.stringify({
-                accesstoken:this.token,
-                content:this.commentText,
+                this.$axios.post(`https://cnodejs.org/api/v1/topic/${this.$route.params.id}/replies`,qs.stringify({
+                    accesstoken:this.token,
+                    content:this.replyText,
+                    reply_id:this.replyId
                 }))
                 .then((res)=>{
                     if(res.data.success){
                         this.$axios.get('https://cnodejs.org/api/v1/topic/'+this.$route.params.id)
                         .then((res)=>{
                             window.scrollTo(0,document.body.scrollHeight)
-                            this.commentText=''
+                            this.replyText=''
                             this.detail=res.data.data
                         })
                         .catch((err)=>{
                             alert(err)
                         })
                     }else{
-                        alert("评论失败")
-                    }
+                        alert(res)
+                    }                   
                 })
                 .catch((err)=>{
                     if(err.response.status===400){
                         alert(err.response.data.error_msg)
                         return
                     }
-                    alert("服务器出错")
-                }) 
+                    alert(err)
+                })
             }
-        },
-        clearComment(){
-            this.commentText=''
         },
         checkUserInfo(){
             this.showStatus=!this.showStatus
@@ -193,8 +179,10 @@ export default {
     font-size: inherit;
     color: inherit
 }
-.panel .markdown-text a {
-    color: #08c
+.markdown-text pre{
+    padding:6px;
+    color: #555;
+    background-color:#ddd;
 }
 .detail{
     margin:40px 0;
@@ -260,25 +248,6 @@ export default {
             height:40px;
             line-height:40px;
             background-color:#ddd;
-        }
-        .reply-text{
-            margin:6px 10px;
-            textarea{
-                float:left;
-                margin-bottom:10px;
-                padding:0 6px;
-                width:100%;
-                height:60px;
-                font-size:16px;
-                line-height:20px;
-                resize:none;
-                border:1px solid #ddd;
-                overflow-y:auto;
-            }
-            .clear{
-                margin-left:10px;
-                background-color:#aaa;
-            }
         }
         .reply-list{
             margin-top:10px;

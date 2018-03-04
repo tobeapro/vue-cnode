@@ -12,8 +12,10 @@
           .name(@click.prevent="toUserInfo(userInfo.loginname)") {{userInfo.loginname}}
           .avatar 
             img(:src="userInfo.avatar_url")
+          .newTopic
+            button(@click.prevent="newTopic") 发布话题
           .logout
-            button(@click.prevent="logout") 登出
+            button(@click.prevent="logout",class="logout-btn") 登出
 </template>
 <script>
 import qs from 'qs'
@@ -53,7 +55,7 @@ export default {
               this.$store.commit('setUserInfo',data)
               this.changeShowStatus() 
           }else{
-            alert(res.error_msg)
+            alert(res.data.error_msg)
           }
         })
         .catch((err)=>{
@@ -68,6 +70,9 @@ export default {
     },
     toUserInfo(name){
       this.$router.push("/user/"+name)
+    },
+    newTopic(){
+      this.$router.push("/new")
     },
     logout(){
       this.$store.commit("setToken",'')
@@ -141,9 +146,16 @@ export default {
             width:100px;
           }
         }
+        .newTopic{
+          margin-top:10px;
+          text-align:center;
+        }
         .logout{
           margin-top:10px;
           text-align: center;
+          .logout-btn{
+            background-color:#aaa;
+          }
         }
       } 
     }

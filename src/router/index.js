@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import list from '../components/views/list.vue'
 import detail from '../components/views/detail.vue'
 import user from '../components/views/user.vue'
+import newTopic from '../components/views/new.vue'
 Vue.use(Router)
 export default new Router({
     routes:[
@@ -20,6 +21,11 @@ export default new Router({
             path:'/user/:loginname',
             name:'user',
             component:user
+        },
+        {
+            path:'/new',
+            name:'new',
+            component:newTopic
         }
     ]
 })

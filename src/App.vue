@@ -1,16 +1,43 @@
 <template>
   <div id="app">
-      <!-- <keep-alive> -->
-        <router-view></router-view>
-      <!-- </keep-alive> -->
+      <router-view></router-view>
+      <div class="backTop" :class="topStatus?'active':''" @click="backTop" title="回到顶部">
+        <img :src="toTop">
+      </div>
   </div>
 </template>
 
 <script>
-
+import toTop from './assets/top.png'
 export default {
   name: 'app',
-  components: {
+  data(){
+    return{
+      topStatus:false,
+      toTop
+    }
+  },
+  methods:{
+    screenScroll(){
+      if(window.scrollY>200){
+        this.topStatus=true
+      }else{
+        this.topStatus=false
+      }
+    },
+    backTop(){
+      let timing=setInterval(()=>{
+        if(window.scrollY<=10){
+          window.scroll(0,0)
+          clearInterval(timing)
+        }else{
+          window.scroll(0,window.scrollY*9/10)
+        }       
+      },10)     
+    }
+  },
+  mounted(){
+    window.addEventListener("scroll",this.screenScroll)
   }
 }
 </script>
@@ -35,6 +62,7 @@ body {
   font-size:12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color:#eee;
 }
 input,button,textarea,td,th,select{outline:none;}
 table {border-collapse:collapse;border-spacing:0;}
@@ -93,5 +121,22 @@ button:hover{
 @keyframes loading {
   from {transform: rotate(0deg)}
   to {transform: rotate(360deg)}
+}
+.backTop{
+  position:fixed;
+  z-index:10;
+  transition: right .4s ease-out;
+  right:-80px;
+  bottom:80px;
+  padding:2px 6px;
+  background-color:#08a1fa;
+  border-radius: 4px;
+  cursor:pointer;
+}
+.backTop.active{
+  right:6px;
+}
+.backTop:hover{
+  background-color:#046ef8;
 }
 </style>
